@@ -1,5 +1,12 @@
 <script>
   import '../app.css';
+  import { goto } from '$app/navigation';
+  import { isAuthenticated, logout } from '$lib/auth.js';
+
+  function handleLogout() {
+    logout();
+    goto('/'); // 登出後導向回首頁
+  }
 </script>
 
 <div class="min-h-screen bg-gray-50 font-sans text-gray-800">
@@ -9,10 +16,19 @@
       <a href="/" class="text-2xl font-bold text-gray-800 hover:text-indigo-600">
         我的部落格
       </a>
-      <div class="space-x-4">
+      <div class="space-x-4 flex items-center">
         <a href="/" class="text-gray-600 hover:text-indigo-600">首頁</a>
-        <!-- TODO: 新增 "關於作者" 和 "登入" 連結 -->
-        <a href="/login" class="text-gray-600 hover:text-indigo-600">登入</a>
+        
+        {#if $isAuthenticated}
+          <!-- 如果已登入 -->
+          <a href="/admin" class="text-gray-600 hover:text-indigo-600">後台管理</a>
+          <button on:click={handleLogout} class="text-gray-600 hover:text-indigo-600">登出</button>
+        {:else}
+          <!-- 如果未登入 -->
+          <a href="/login" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">
+            登入
+          </a>
+        {/if}
       </div>
     </div>
   </nav>

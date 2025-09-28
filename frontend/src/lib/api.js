@@ -12,7 +12,7 @@ const apiClient = axios.create({
 export default {
   // 取得所有文章
   getPosts(page = 1, limit = 10) {
-    return apiClient.get(`/posts?page=${page}&limit=${limit}`);
+    return apiClient.get(`/posts/?page=${page}&limit=${limit}`);
   },
 
   // 根據 ID 取得單篇文章
