@@ -10,11 +10,12 @@
 - 前端 (Frontend): Svelte + SvelteKit
 - 資料庫 (Database): PostgreSQL
 - 身份驗證 (Authentication): JWT (JSON Web Tokens)
+- CI/CD: GitHub Actions
 - 部署 (Deployment): Docker (建議)
 
 ## 2. 如何執行後端 (How to Run Backend)
 
-1. 安裝 Go: 請確保你的系統已安裝 Go (建議版本 1.22 或以上)。
+1. 安裝 Go: 請確保你的系統已安裝 Go (建議版本 1.24 或以上)。
 2. 設定 PostgreSQL: 建立一個新的 PostgreSQL 資料庫。
 3. 設定環境變數:
    - 複製 `.env.example` 檔案并重新命名為 `.env`。
@@ -25,13 +26,37 @@
 
 ## 3. 如何執行前端 (How to Run Frontend)
 
-1. 安裝 Node.js: 請確保你的系統已安裝 Node.js (建議版本 18 或以上)。
+1. 安裝 Node.js: 請確保你的系統已安裝 Node.js (建議版本 22 或以上)。
 2. 切換到前端目錄: `cd frontend`
 3. 安裝依賴: 執行 `npm install`。
 4. 啟動開發伺服器: 執行 `npm run dev`。
 5. SvelteKit 開發伺服器將會啟動，你可以在瀏覽器中開啟 http://localhost:5173 (或終端機中顯示的 URL) 來查看網站。
 
 **重要提示**: 請確保後端 Go 伺服器正在運行，因為前端需要從後端 API (http://localhost:8080) 獲取資料。
+
+## 4. 持續整合 (Continuous Integration)
+
+本專案使用 GitHub Actions 進行自動化 CI，工作流程會在向 `main` 分支提交 Pull Request 時自動觸發。
+
+### CI 流程包含:
+
+**前端 (Frontend)**:
+- 安裝 Node.js 22
+- 安裝依賴套件 (`npm ci`)
+- 建置專案 (`npm run build`)
+
+**後端 (Backend)**:
+- 安裝 Go 1.24
+- 下載依賴模組 (`go mod download`)
+- 程式碼檢查 (`go vet`)
+- 建置專案 (`go build ./...`)
+- 執行測試 (`go test ./...`)
+
+**注意**: 
+- 前端目前沒有配置 linting 或測試工具，CI 流程僅包含建置步驟
+- 後端目前沒有撰寫測試檔案，但 CI 會執行 `go test` 確保程式結構正確
+
+CI 配置檔案位於 `.github/workflows/ci.yml`，若任何步驟失敗，整個工作流程將會失敗。
 
 ### 測試使用者驗證 (可使用 Postman 或 curl)
 
@@ -62,7 +87,7 @@ B. 登入取得 Token
       "token": "eyJhbGciOiJI..."
    }
    ```
-## 3. 核心功能 (Core Features)
+## 5. 核心功能 (Core Features)
 
 ### 使用者管理
 
@@ -108,7 +133,7 @@ B. 登入取得 Token
    - `created_at` (TIMESTAMP)
    - `updated_at` (TIMESTAMP)
    
-## 5. API 端點設計 (API Endpoints)
+## 6. API 端點設計 (API Endpoints)
 
 所有 API 都以 /api/v1 為前綴。
 
@@ -124,7 +149,7 @@ B. 登入取得 Token
 | POST          | /upload          | 上傳檔案（例如圖片）      | 是 (Yes)         |
 | GET           | /author/:id      | 取得作者公開資訊          | 否 (No)          |
 
-## 6. 前端結構 (Frontend Structure - SvelteKit)
+## 7. 前端結構 (Frontend Structure - SvelteKit)
 
 ```
 src/
@@ -154,7 +179,7 @@ src/
 └── app.html
 ```
 
-## 7. 開發步驟 (Roadmap)
+## 8. 開發步驟 (Roadmap)
 
 1. 第一階段：後端基礎建設
    - [x] 初始化 Go 專案，安裝 Gin 和 PostgreSQL 驅動。
