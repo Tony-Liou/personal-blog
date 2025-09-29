@@ -15,7 +15,7 @@
 
 ## 2. 如何執行後端 (How to Run Backend)
 
-1. 安裝 Go: 請確保你的系統已安裝 Go (建議版本 1.22 或以上)。
+1. 安裝 Go: 請確保你的系統已安裝 Go (建議版本 1.24 或以上)。
 2. 設定 PostgreSQL: 建立一個新的 PostgreSQL 資料庫。
 3. 設定環境變數:
    - 複製 `.env.example` 檔案并重新命名為 `.env`。
@@ -26,7 +26,7 @@
 
 ## 3. 如何執行前端 (How to Run Frontend)
 
-1. 安裝 Node.js: 請確保你的系統已安裝 Node.js (建議版本 18 或以上)。
+1. 安裝 Node.js: 請確保你的系統已安裝 Node.js (建議版本 22 或以上)。
 2. 切換到前端目錄: `cd frontend`
 3. 安裝依賴: 執行 `npm install`。
 4. 啟動開發伺服器: 執行 `npm run dev`。
@@ -41,12 +41,12 @@
 ### CI 流程包含:
 
 **前端 (Frontend)**:
-- 安裝 Node.js 18
+- 安裝 Node.js 22
 - 安裝依賴套件 (`npm ci`)
 - 建置專案 (`npm run build`)
 
 **後端 (Backend)**:
-- 安裝 Go 1.23
+- 安裝 Go 1.24
 - 下載依賴模組 (`go mod download`)
 - 程式碼檢查 (`go vet`)
 - 建置專案 (`go build ./...`)
