@@ -49,7 +49,7 @@
             <a href={`/posts/${post.id}`} class="text-gray-900 hover:text-indigo-600">{post.title}</a>
           </h2>
           <div class="text-gray-500 text-sm mb-4">
-            <span>由 {post.author.username} 發表於 {formatDate(post.created_at)}</span>
+            <span>由 <a href={`/author/${post.author_id}`} class="text-indigo-600 hover:text-indigo-800 font-medium">{post.author.username}</a> 發表於 {formatDate(post.created_at)}</span>
           </div>
           <p class="text-gray-700 leading-relaxed">
             <!-- 顯示部分內容作為預覽 -->

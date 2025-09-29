@@ -20,6 +20,11 @@ export default {
     return apiClient.get(`/posts/${id}`);
   },
 
+  // 取得作者資訊
+  getAuthor(id) {
+    return apiClient.get(`/author/${id}`);
+  },
+
   // --- 需要驗證的 API ---
 
   // 登入
@@ -50,6 +55,19 @@ export default {
     return apiClient.delete(`/posts/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+
+  // 上傳檔案
+  uploadFile(file, token) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return apiClient.post('/upload', formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
       },
     });
   },

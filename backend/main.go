@@ -1,11 +1,14 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -385,8 +388,91 @@ func handleGetAuthor(c *gin.Context) {
 }
 
 func handleUploadFile(c *gin.Context) {
-	// TODO: 實作檔案上傳邏輯，儲存檔案並回傳 URL
-	c.JSON(http.StatusOK, gin.H{"message": "檔案上傳 (待實作)"})
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "無法讀取檔案: " + err.Error()})
+		return
+	}
+
+	// 檢查檔案大小 (限制 10MB)
+	const maxSize = 10 << 20 // 10MB
+	if file.Size > maxSize {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "檔案大小不能超過 10MB"})
+		return
+	}
+
+	// 檢查檔案類型
+	allowedTypes := map[string]bool{
+		"image/jpeg": true,
+		"image/jpg":  true,
+		"image/png":  true,
+		"image/gif":  true,
+		"image/webp": true,
+	}
+
+	// 開啟檔案來檢查 MIME 類型
+	src, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "無法開啟檔案"})
+		return
+	}
+	defer src.Close()
+
+	buffer := make([]byte, 512)
+	_, err = src.Read(buffer)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "無法讀取檔案"})
+		return
+	}
+
+	contentType := http.DetectContentType(buffer)
+	if !allowedTypes[contentType] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "不支援的檔案類型，僅支援 JPEG, PNG, GIF, WebP"})
+		return
+	}
+
+	// 創建 uploads 目錄（如果不存在）
+	uploadsDir := "./uploads"
+	if _, err := os.Stat(uploadsDir); os.IsNotExist(err) {
+		err = os.Mkdir(uploadsDir, 0755)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "無法創建上傳目錄"})
+			return
+		}
+	}
+
+	// 生成唯一檔案名
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if ext == "" {
+		// 根據 MIME 類型設定副檔名
+		switch contentType {
+		case "image/jpeg":
+			ext = ".jpg"
+		case "image/png":
+			ext = ".png"
+		case "image/gif":
+			ext = ".gif"
+		case "image/webp":
+			ext = ".webp"
+		}
+	}
+
+	filename := fmt.Sprintf("%d_%s%s", time.Now().Unix(), generateRandomString(8), ext)
+	filepath := fmt.Sprintf("%s/%s", uploadsDir, filename)
+
+	// 儲存檔案
+	if err := c.SaveUploadedFile(file, filepath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "儲存檔案失敗: " + err.Error()})
+		return
+	}
+
+	// 回傳檔案 URL
+	fileURL := fmt.Sprintf("/uploads/%s", filename)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "檔案上傳成功",
+		"url":     fileURL,
+		"filename": filename,
+	})
 }
 
 // --- 中介層 (Middleware) ---
@@ -455,4 +541,13 @@ func generateJWT(user *User) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+// generateRandomString 產生指定長度的隨機字串
+func generateRandomString(length int) string {
+	bytes := make([]byte, length/2)
+	if _, err := rand.Read(bytes); err != nil {
+		return fmt.Sprintf("%d", time.Now().UnixNano())
+	}
+	return hex.EncodeToString(bytes)
 }

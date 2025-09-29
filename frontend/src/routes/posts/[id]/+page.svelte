@@ -26,8 +26,7 @@
 
   <!-- 作者與日期資訊 -->
   <div class="flex items-center text-gray-500 text-sm mb-6">
-    <!-- TODO: 連結到作者頁面 -->
-    <a href="#" class="font-medium hover:text-indigo-600">{post.author.username}</a>
+    <a href={`/author/${post.author_id}`} class="font-medium hover:text-indigo-600">{post.author.username}</a>
     <span class="mx-2">&middot;</span>
     <time datetime={post.created_at}>{formatDate(post.created_at)}</time>
   </div>

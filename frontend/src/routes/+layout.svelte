@@ -18,6 +18,7 @@
       </a>
       <div class="space-x-4 flex items-center">
         <a href="/" class="text-gray-600 hover:text-indigo-600">首頁</a>
+        <a href="/about" class="text-gray-600 hover:text-indigo-600">關於作者</a>
         
         {#if $isAuthenticated}
           <!-- 如果已登入 -->
